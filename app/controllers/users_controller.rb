@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     jsonEmail = verify_email(@user)
 
     unless jsonEmail["format_valid"] && jsonEmail["smtp_check"]
-      render :json => {"Error" => "Email inválido"}
+      render :json => {"email" => "Email inválido"}
     else
       if @user.save
         render json: @user, status: :created, location: @user
@@ -61,6 +61,6 @@ class UsersController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def user_params
-      params.require(:user).permit(:email, :name, :birth_data, :password)
+      params.require(:user).permit(:email, :name, :birth_data, :password, :password_confirmation)
     end
 end
