@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :update, :destroy]
+  skip_before_action :authenticate_request  
   require 'net/http'
 
   # GET /users
@@ -63,4 +64,5 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(:email, :name, :birth_data, :password)
     end
+  
 end
