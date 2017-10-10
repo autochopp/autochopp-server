@@ -78,7 +78,7 @@ class CheckoutController < ApplicationController
     if payment.errors.any?
       render json: payment.errors
     else
-      render json: payment, status: :created      
+      render json: order, status: :created      
     end
 
     # Code below only for debug
