@@ -1,4 +1,5 @@
 class CheckoutController < ApplicationController
+  skip_before_action :authenticate_request    
   
   # Generate session token for payment
   def generate_session_token
