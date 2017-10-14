@@ -6,9 +6,10 @@ class AuthorizeApiRequest
     @headers = headers
   end
 
-  # This is a mandatory method of SimpleCommand
+  # This is a mandatory method of SimpleCommand.
+  # Just returns the found logged user instance
   def call
-    return user
+    user
   end
 
   private
@@ -17,7 +18,7 @@ class AuthorizeApiRequest
 
   def user
     @user ||= User.find(decoded_auth_token[:user_id]) if decoded_auth_token
-    @user || errors.add(:token, 'Invalid token') && nil
+    @user || errors.add(:token, 'Invalid token!') && nil
   end
 
   def decoded_auth_token
