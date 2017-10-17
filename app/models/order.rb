@@ -1,4 +1,4 @@
 class Order < ApplicationRecord
-    has_many :chopps
+    has_many :chopps , dependent: :destroy
     belongs_to :user
 end

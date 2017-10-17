@@ -11,28 +11,47 @@ class CheckoutController < ApplicationController
     end
   end
 
-  # Send payment data for pagseguro
+  
+  # Post for create a pagseguro transaction and persist data in database
   def create
 
-    # Create order in database
+    # Register order in database
     order = Order.create(user: @current_user, status: "Em análise")
+    
+    # Register chopps in database
+    Chopp.create_chopps(params[:chopps], order)
+    
+    payment = create_payment_request(order)
 
-    chopps = [] # Array with pagseguro items
+    # Assigning the total amount of the payment to the order
+    order.total_price = payment.gross_amount.to_f
+    order.save
 
-    # Format params[:chopps] -> {chopps: [
-    # {amount: 8.00, quantity: 1, size: 1000, chopp_type: "tradicional", collar: 2},
-    # {amount: 5.00, quantity: 1, size: 500, chopp_type: "vinho", collar: 0}]}
-    chopps_params = params[:chopps]
-    chopps_params.each do |t|
-      # Creating a chopps in database
-      chopp = Chopp.create(order: order, price: t['amount'], size: t['size'],
-                           chopp_type: t['chopp_type'], collar: t['collar'])
-      # Creating pagseguro items
-      chopps << PagSeguro::Item.new(id: chopp.id, description: "Chopp",
-                                    amount: chopp.price ,  quantity: t['quantity'])
+    debug_payment(payment)
+
+    if payment.errors.any?
+      Order.last.destroy
+      render json: payment.errors
+    else
+      render json: order, status: :created
     end
 
-    # Creating payment pagseguro request
+  end
+
+  def create_pagseguro_items(order)
+    items = []
+
+    order.chopps.each do |chopp|
+      items << PagSeguro::Item.new(id: chopp.id, description: "Chopp", amount: chopp.price,
+                                   quantity: 1)
+    end
+
+    return items
+  end
+
+  # Creating payment pagseguro request
+  def create_payment_request(order)
+    
     payment = PagSeguro::CreditCardTransactionRequest.new
 
     payment.payment_mode = "gateway"
@@ -40,14 +59,15 @@ class CheckoutController < ApplicationController
     payment.reference = order.id
 
 
-    chopps.each do |chopp|
-      payment.items << chopp
+    items = create_pagseguro_items(order)
+    items.each do |item|
+      payment.items << item
     end
 
     payment.sender = {
       hash: params[:sender_hash],
       name: params[:name],
-      email: "c18315567957132943379@sandbox.pagseguro.com.br" # Email must be with this domain because it is in the test environment
+      email: "teste@sandbox.pagseguro.com.br" # Email must be with this domain because it is in the test environment
     }
 
     payment.credit_card_token = params[:card_token]
@@ -70,16 +90,44 @@ class CheckoutController < ApplicationController
     }
 
     payment.create
+    
+  end
 
-    # Assigning the total amount of the payment to the order
-    order.total_price = payment.gross_amount.to_f
-    order.save
 
-    if payment.errors.any?
-      render json: payment.errors
-    else
-      render json: order, status: :created
-    end
-
+  def debug_payment(payment)
+    if payment.errors.any?		
+      puts "=> ERRORS"		
+      puts payment.errors.join("\n")		
+     else		
+      puts "=> Transaction"		
+      puts "  code: #{payment.code}"		
+      puts "  reference: #{payment.reference}"		
+      puts "  type: #{payment.type_id}"		
+      puts "  payment link: #{payment.payment_link}"		
+      puts "  status: #{payment.status}"		
+      puts "  payment method type: #{payment.payment_method}"		
+      puts "  created at: #{payment.created_at}"		
+      puts "  updated at: #{payment.updated_at}"		
+      puts "  gross amount: #{payment.gross_amount.to_f}"		
+      puts "  discount amount: #{payment.discount_amount.to_f}"		
+      puts "  net amount: #{payment.net_amount.to_f}"		
+      puts "  extra amount: #{payment.extra_amount.to_f}"		
+      puts "  installment count: #{payment.installment_count}"		
+    
+      puts "    => Items"		
+      puts "      items count: #{payment.items.size}"		
+      payment.items.each do |item|		
+        puts "      item id: #{item.id}"		
+        puts "      description: #{item.description}"		
+        puts "      quantity: #{item.quantity}"		
+        puts "      amount: #{item.amount.to_f}"		
+      end		
+    
+      puts "    => Sender"		
+      puts "      name: #{payment.sender.name}"		
+      puts "      email: #{payment.sender.email}"		
+      puts "      phone: (#{payment.sender.phone.area_code}) #{payment.sender.phone.number}"		
+      puts "      document: #{payment.sender.document}: #{payment.sender.document}"		
+     end
   end
 end
