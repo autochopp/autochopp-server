@@ -11,16 +11,15 @@ class CheckoutController < ApplicationController
     end
   end
 
-  
   # Post for create a pagseguro transaction and persist data in database
   def create
 
     # Register order in database
     order = Order.create(user: @current_user, status: "Em análise")
-    
+
     # Register chopps in database
     Chopp.create_chopps(params[:chopps], order)
-    
+
     payment = create_payment_request(order)
 
     # Assigning the total amount of the payment to the order
@@ -51,7 +50,6 @@ class CheckoutController < ApplicationController
 
   # Creating payment pagseguro request
   def create_payment_request(order)
-    
     payment = PagSeguro::CreditCardTransactionRequest.new
 
     payment.payment_mode = "gateway"
@@ -74,7 +72,7 @@ class CheckoutController < ApplicationController
 
     payment.holder = {
      name: params[:card_name],
-     birth_date: params[:birthday],
+     birth_date: params[:birthday].to_date.strftime('%m/%d/%Y'),
      document: {
        type: "CPF",
        value: params[:cpf]
@@ -90,7 +88,6 @@ class CheckoutController < ApplicationController
     }
 
     payment.create
-    
   end
 
 
