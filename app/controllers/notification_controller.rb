@@ -8,7 +8,12 @@ class NotificationController < ApplicationController
       order = Order.where(reference: transaction.reference).last
       order.status = status[transaction.status.id.to_i - 1]
       order.save
-    end
+
+      order.chopps.each do |chopp|
+        chopp.qrcode = chopp.id.to_s + SecureRandom.hex(8)
+        chopp.qrcode_validate = true
+        chopp.save
+      end
 
   end
 
