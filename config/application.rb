@@ -26,6 +26,6 @@ module AutochoppServer
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     #Loads the authentication module
-    config.autoload_paths << Rails.root.join('lib')    
+    config.autoload_paths << Rails.root.join('lib')
   end
 end
