@@ -7,11 +7,11 @@ class Chopp < ApplicationRecord
 
   def self.create_chopps(chopps, order)
     chopps.each do |chopp|
-      (1..chopp['quantity']).each do
+      chopp_quantity = chopp['quantity'].to_i
+      (1..chopp_quantity).each do
         Chopp.create(order: order, price: chopp['amount'], size: chopp['size'],
                    chopp_type: chopp['chopp_type'], collar: chopp['collar'])
       end
-    end                           
+    end
   end
-  
 end
