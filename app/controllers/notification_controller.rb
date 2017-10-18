@@ -1,4 +1,5 @@
 class NotificationController < ApplicationController
+  skip_before_action :authenticate_request
   
   def create
     transaction = PagSeguro::Transaction.find_by_notification_code(params[:notificationCode])
