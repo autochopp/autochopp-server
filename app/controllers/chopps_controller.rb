@@ -9,11 +9,14 @@ class ChoppsController < ApplicationController
 
       chopps_combinations.each_with_index do |value, position|
         if value == chopp_attr
-          render json: {code: position}
+          chopp.qrcode_validate = false
+          chopp.save
+
+          render json: {code: position, status: :ok}
         end 
       end
     else
-      render json: {error: "QRCode Invalido"}          
+      render json: {errors: "QRCode Invalido", status: :bad_request}          
     end
   end
 
