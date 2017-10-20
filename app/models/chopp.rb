@@ -17,7 +17,7 @@ class Chopp < ApplicationRecord
 
   def self.create_chopps_combinations
     chopps_attr = { :size => [ 500, 1000],
-                    :chopp_type  => [ "tradicional", "vinho"],
+                    :chopp_type  => ["tradicional", "vinho"],
                     :collar => [0, 1, 2] }
 
     ary = chopps_attr.map {|k,v| [k].product v}

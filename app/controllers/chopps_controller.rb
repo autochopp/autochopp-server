@@ -1,5 +1,5 @@
 class ChoppsController < ApplicationController
-  skip_before_action :authenticate_request
+  skip_before_action :authenticate_request , only: [:validate_qrcode]
 
   def validate_qrcode
     chopp = Chopp.find_by(qrcode: params[:qrcode])
@@ -18,6 +18,22 @@ class ChoppsController < ApplicationController
     else
       render json: {errors: "QRCode Invalido", status: :bad_request}          
     end
+  end
+
+  def index
+    orders = Order.where(user: @current_user)
+    
+    chopps = []
+
+    orders.each do |order|
+      order.chopps.each do |chopp|
+        if chopp.qrcode_validate != false
+          chopps << chopp
+        end
+      end
+    end
+
+    render json: chopps, status: :ok
   end
 
 end
