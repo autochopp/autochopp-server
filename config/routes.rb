@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
 
   post 'notification', to: 'notification#create'
+  post 'validate_qrcode', to: 'chopps#validate_qrcode'
   post 'checkout/create'
+  get  'getchopps', to: 'chopps#index'
   
   resources :users
   
