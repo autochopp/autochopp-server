@@ -6,7 +6,7 @@ class Chopp < ApplicationRecord
   # {amount: 5.00, quantity: 1, size: 500, chopp_type: "vinho", collar: 0}]}
 
   def self.create_chopps(chopps, order)
-    chopps.each do |chopp|
+    chopps.each do |chopp|  
       chopp_quantity = chopp['quantity'].to_i
       (1..chopp_quantity).each do
         Chopp.create(order: order, price: chopp['amount'], size: chopp['size'],
@@ -16,9 +16,9 @@ class Chopp < ApplicationRecord
   end
 
   def self.create_chopps_combinations
-    chopps_attr = { :size => [ 500, 1000],
-                    :chopp_type  => ["tradicional", "vinho"],
-                    :collar => [0, 1, 2] }
+    chopps_attr = { :size => [ 500, 700],
+                    :chopp_type  => ["tradicional"],
+                    :collar => [1, 2] }
 
     ary = chopps_attr.map {|k,v| [k].product v}
     chopps_combinations = ary.shift.product(*ary).map {|a| Hash[a]}
