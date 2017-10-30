@@ -30,9 +30,9 @@ class CheckoutController < ApplicationController
 
     if payment.errors.any?
       Order.last.destroy
-      render json: payment.errors
+      render json: payment.errors , status: :bad_request
     else
-      render json: order, status: :created
+      render json: order, status: :ok
     end
 
   end
@@ -72,7 +72,7 @@ class CheckoutController < ApplicationController
 
     payment.holder = {
      name: params[:card_name],
-     birth_date: params[:birthday].to_date.strftime('%m/%d/%Y'),
+     birth_date: (params[:birthday].to_date.strftime('%d/%m/%Y') if params[:birthday]),
      document: {
        type: "CPF",
        value: params[:cpf]
