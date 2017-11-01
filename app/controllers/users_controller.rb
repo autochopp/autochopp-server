@@ -21,12 +21,12 @@ class UsersController < ApplicationController
     jsonEmail = verify_email(@user)
 
     unless jsonEmail["format_valid"] && jsonEmail["smtp_check"]
-      render :json => {"email" => "Email inválido"}
+      render json: {email: "Email inválido"}, status: :bad_request 
     else
       if @user.save
         render json: @user, status: :created, location: @user
       else
-        render json: @user.errors, status: :unprocessable_entity
+        render json: @user.errors, status: :bad_request
       end
     end
   end

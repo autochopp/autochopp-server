@@ -12,11 +12,11 @@ class ChoppsController < ApplicationController
           chopp.qrcode_validate = false
           chopp.save
 
-          render json: {code: position, status: :ok}
+          render json: {code: position}, status: :ok
         end 
       end
     else
-      render json: {errors: "QRCode Invalido", status: :bad_request}          
+      render json: {errors: "QRCode Invalido"}, status: :bad_request          
     end
   end
 
