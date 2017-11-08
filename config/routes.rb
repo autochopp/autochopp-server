@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   post 'notification', to: 'notification#create'
   post 'validate_qrcode', to: 'chopps#validate_qrcode'
   post 'checkout/create'
+  post 'setsensors', to: 'sensors#set_sensors_values' 
+  get 'getsensors', to: 'sensors#get_sensors_values' 
   get  'getchopps', to: 'chopps#index'
   
   resources :users
