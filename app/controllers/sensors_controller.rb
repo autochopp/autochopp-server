@@ -5,7 +5,7 @@ class SensorsController < ApplicationController
 
   def get_sensors_values
     render json: {temperature: @@SensorStorage.temperature, volume: @@SensorStorage.volume,
-    internet_status: @@SensorStorage.machine_status}, status: :ok
+    machine_status: @@SensorStorage.machine_status}, status: :ok
   end
   
   def set_sensors_values
