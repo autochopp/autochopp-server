@@ -16,7 +16,7 @@ class Chopp < ApplicationRecord
   end
 
   def self.create_chopps_combinations
-    chopps_attr = { :size => [ 500, 700],
+    chopps_attr = { :size => [ 250, 350],
                     :chopp_type  => ["tradicional"],
                     :collar => [1, 2] }
 
